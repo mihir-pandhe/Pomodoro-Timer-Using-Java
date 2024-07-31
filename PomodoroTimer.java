@@ -1,3 +1,4 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -16,11 +17,17 @@ public class PomodoroTimer {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Enter work session duration (minutes): ");
-        workTime = scanner.nextInt() * 60;
+        try {
+            System.out.print("Enter work session duration (minutes): ");
+            workTime = scanner.nextInt() * 60;
 
-        System.out.print("Enter break session duration (minutes): ");
-        breakTime = scanner.nextInt() * 60;
+            System.out.print("Enter break session duration (minutes): ");
+            breakTime = scanner.nextInt() * 60;
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please enter an integer value for the duration.");
+            scanner.close();
+            return;
+        }
 
         timer = new Timer();
 
@@ -33,11 +40,14 @@ public class PomodoroTimer {
             if (input.equalsIgnoreCase("q")) {
                 timer.cancel();
                 System.out.println("Pomodoro Timer stopped.");
+                displaySummary();
                 break;
             } else if (input.equalsIgnoreCase("p")) {
                 pauseTimer();
             } else if (input.equalsIgnoreCase("r")) {
                 resumeTimer();
+            } else {
+                System.out.println("Invalid input. Please enter 'q', 'p', or 'r'.");
             }
         }
 
@@ -96,5 +106,10 @@ public class PomodoroTimer {
     private static void resumeTimer() {
         isPaused = false;
         System.out.println("\nTimer resumed.");
+    }
+
+    private static void displaySummary() {
+        System.out.printf("Summary: Completed work sessions: %d, Completed break sessions: %d\n", completedWorkSessions,
+                completedBreakSessions);
     }
 }
